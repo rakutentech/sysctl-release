@@ -1,0 +1,13 @@
+name: sysctl
+version: "1"
+commit_hash: c390118
+uncommitted_changes: false
+jobs:
+- name: sysctl
+  version: 47b48af5373ec6b741442ddbce09ed9539504edd
+  fingerprint: 47b48af5373ec6b741442ddbce09ed9539504edd
+  sha1: 4196a80ec61a5b29998f13348982a32726614cac
+license:
+  version: e6c4ccc65c76e75e2338d1edabdcf264d37ee663
+  fingerprint: e6c4ccc65c76e75e2338d1edabdcf264d37ee663
+  sha1: 0e7210f3a817a7473260208271634813268743ce

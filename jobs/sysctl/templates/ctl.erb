@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -eux
+
+JOB_DIR=/var/vcap/jobs/sysctl
+SYSCTL_RELATIVE_PATH=etc/sysctl.d/61-bosh-sysctl-release
+RUN_DIR=/var/vcap/sys/run/sysctl
+LOG_DIR=/var/vcap/sys/log/sysctl
+PIDFILE=${RUN_DIR}/pid
+
+case $1 in
+
+  start)
+    mkdir -p $RUN_DIR $LOG_DIR
+    chown -R vcap:vcap $RUN_DIR $LOG_DIR
+    cp -f ${JOB_DIR}/${SYSCTL_RELATIVE_PATH} /${SYSCTL_RELATIVE_PATH}
+
+    exec -- \
+      >>  $LOG_DIR/sysctl.stdout.log \
+      2>> $LOG_DIR/sysctl.stderr.log
+
+    # this script is a fire-and-forget, but monit doesn't play that game,
+    # so we tell monit to check a pid that's always there
+    echo 1 > $PIDFILE
+
+    # strip comments, select lines w/ "=", and set the sysctl
+    for SYSCTL in $(sed 's/#.*$//' /${SYSCTL_RELATIVE_PATH} | grep =); do
+      sysctl -w $SYSCTL
+    done
+
+    ;;
+
+  stop)
+    rm -f $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: ctl {start|stop}" ;;
+
+esac

@@ -1,0 +1,5 @@
+check process sysctl
+  with pidfile /var/vcap/sys/run/sysctl/pid
+  start program "/var/vcap/jobs/sysctl/bin/ctl start"
+  stop program "/var/vcap/jobs/sysctl/bin/ctl stop"
+  group vcap

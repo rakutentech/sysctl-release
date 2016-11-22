@@ -7,7 +7,7 @@ BOSH Release that enables modification of sysctl variables (kernel state)
 Upload release:
 
 ```
-bosh upload-release FIXME
+bosh upload-release https://github.com/cloudfoundry-community/sysctl-release/releases/download/v1/sysctl-1.tgz
 ```
 
 In this example, we increase the sysctl variable `net.nf_conntrack_max` to
@@ -29,6 +29,10 @@ instance_groups:
       # fixes: `nf_conntrack: table full, dropping packet`
       net.nf_conntrack_max=524288
 ```
+
+## Examples
+
+Here is an [production BOSH manifest](https://github.com/cunnie/deployments/blob/f6a9fdc6ac3f7bfd514e8ea42175514d4491c3cb/concourse-ntp-pdns-gce.yml) which uses the sysctl BOSH release.
 
 ## Developer Notes
 

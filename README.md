@@ -32,13 +32,13 @@ instance_groups:
 
 ## Examples
 
-Here is an [production BOSH manifest](https://github.com/cunnie/deployments/blob/f6a9fdc6ac3f7bfd514e8ea42175514d4491c3cb/concourse-ntp-pdns-gce.yml) which uses the sysctl BOSH release.
+Here is a [production BOSH manifest](https://github.com/cunnie/deployments/blob/f6a9fdc6ac3f7bfd514e8ea42175514d4491c3cb/concourse-ntp-pdns-gce.yml) which uses the sysctl BOSH release.
 
 ## Developer Notes
 
 This release creates a `sysctl` configuration in
 `/etc/sysctl.d/61-bosh-sysctl-release.conf`;  this _should_ override any
 settings in the stemcell (typically `/etc/sysctl.d/60-*`), but this is a
-non-contractual dependency (A stemcell may have, for example, an
+non-contractual dependency (A stemcell may have, for example, a
 `/etc/sysctl.d/62-*` file which would override any settings in the file created
 by this release).

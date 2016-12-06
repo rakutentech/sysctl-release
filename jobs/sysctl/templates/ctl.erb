@@ -3,7 +3,7 @@
 set -eux
 
 JOB_DIR=/var/vcap/jobs/sysctl
-SYSCTL_RELATIVE_PATH=etc/sysctl.d/61-bosh-sysctl-release
+SYSCTL_RELATIVE_PATH=etc/sysctl.d/61-bosh-sysctl-release.conf
 RUN_DIR=/var/vcap/sys/run/sysctl
 LOG_DIR=/var/vcap/sys/log/sysctl
 PIDFILE=${RUN_DIR}/pid
@@ -23,15 +23,17 @@ case $1 in
     # so we tell monit to check a pid that's always there
     echo 1 > $PIDFILE
 
-    # strip comments, select lines w/ "=", and set the sysctl
-    for SYSCTL in $(sed 's/#.*$//' /${SYSCTL_RELATIVE_PATH} | grep =); do
-      sysctl -w $SYSCTL
-    done
+    # set the kernel variables, again. All the variables
+    sysctl --system
+
+    <%= p('bash_start_snippet') %>
 
     ;;
 
   stop)
     rm -f $PIDFILE
+
+    <%= p('bash_stop_snippet') %>
 
     ;;
 

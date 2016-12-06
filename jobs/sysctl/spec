@@ -3,7 +3,7 @@ name: sysctl
 
 templates:
   ctl.erb: bin/ctl
-  sysctl.conf.erb: etc/sysctl.d/61-bosh-sysctl-release
+  sysctl.conf.erb: etc/sysctl.d/61-bosh-sysctl-release.conf
 
 packages: []
 
@@ -11,3 +11,16 @@ properties:
   sysctl_conf:
     description: |
       A file of sysctl settings, one per line, no spaces, e.g. `net.nf_conntrack_max=65536`
+    default: ""
+  bash_start_snippet:
+    description: |
+      A series of bash commands that are injected into the sysctl job's
+      startup script. Useful for post start-up customization, e.g.
+      "/var/vcap/bosh/bin/monit restart postgres"
+    default: ""
+  bash_stop_snippet:
+    description: |
+      A series of bash commands that are injected into the sysctl job's
+      stop script. Useful for customization, e.g.
+      "ifdown eth0; ifup eth0"
+    default: ""

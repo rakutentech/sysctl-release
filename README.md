@@ -7,7 +7,7 @@ BOSH Release that enables modification of sysctl variables (kernel state)
 Upload release:
 
 ```
-bosh upload-release https://github.com/cloudfoundry-community/sysctl-release/releases/download/v1/sysctl-1.tgz
+bosh upload-release https://github.com/cloudfoundry-community/sysctl-release/releases/download/v2/release.tgz
 ```
 
 In this example, we increase the sysctl variable `net.nf_conntrack_max` to

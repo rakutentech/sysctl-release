@@ -1,0 +1,24 @@
+#!/bin/bash
+set -eux
+
+SUBJOB=ctl
+source env.sh
+
+case $1 in
+
+  start)
+    # this script is a fire-and-forget, but monit doesn't play that game,
+    # so we tell monit to check a pid that's always there
+    echo 1 > $PIDFILE
+
+    ;;
+
+  stop)
+    rm -f $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: ctl {start|stop}" ;;
+
+esac

@@ -2,7 +2,7 @@
 
 BOSH Release that enables modification of sysctl variables (kernel state)
 
-## HOWTO
+## Deploying
 
 Upload release:
 
@@ -10,14 +10,11 @@ Upload release:
 bosh upload-release https://github.com/cloudfoundry-community/sysctl-release/releases/download/v2/release.tgz
 ```
 
-In this example, we increase the sysctl variable `net.nf_conntrack_max` to
-eliminate dropped packets. We believe that
-[nf_conntrack](https://www.kernel.org/doc/Documentation/networking/nf_conntrack-sysctl.txt)
-was enabled as a side-effect of running Docker containers (Concourse workers).
-Coupled with running a public NTP server with hundreds of thousands of clients,
-this exhausted the kernel's nf_conntrack table. The symptoms were `nf_conntrack:
-table full, dropping packet` messages in syslog, `connect: Network is
-unreachable` messages in Concourse jobs, and dropped packets from NTP clients.
+Then proceed to configure it as appropriate for your use cases.
+
+## Configuring sysctl
+
+In this example, we increase the sysctl variable `net.nf_conntrack_max` to eliminate dropped packets. We believe that [nf_conntrack](https://www.kernel.org/doc/Documentation/networking/nf_conntrack-sysctl.txt) was enabled as a side-effect of running Docker containers (Concourse workers). Coupled with running a public NTP server with hundreds of thousands of clients, this exhausted the kernel's nf_conntrack table. The symptoms were `nf_conntrack: table full, dropping packet` messages in syslog, `connect: Network is unreachable` messages in Concourse jobs, and dropped packets from NTP clients.
 
 ```yaml
 releases:
@@ -27,41 +24,41 @@ releases:
 instance_groups:
 - release: sysctl
   properties:
-    sysctl_conf: |
+    sysctl_conf:
       # fixes: `nf_conntrack: table full, dropping packet`
-      net.nf_conntrack_max=524288
+    - {name: net.nf_conntrack_max, value: 524288}
 ```
 
-In this example we also set a custom `/etc/issue` message, which we clear out
-when the sysctl job is stopped.
+Other common sysctl use cases include:
 
-Note: The `bash_start_snippet` and `bash_stop_snippet`
-properties are meant to be used as duct tape: hold things in place long enough
-for a more robust and permanent solution.
+- Increase `net.core.somaxconn` to avoid dropping incoming TCP connections
+- Increase `net.core.rmem_max` and `net.core.rmem_default` to avoid dropping incoming UDP traffic
+- Decrease `vm.swappiness` to avoid swapping out memory allocated by running processes
+
+## Duck taping
+
+This release also allows to run arbitrary commands in response to standard bosh lifecycle events (pre-start, post-start, post-deploy, drain).
+
+In the following example we set a custom `/etc/issue` message, which we clear out when the instance is stopped.
+
+Note: The `bash_*_snippet` properties are meant to be used as duct tape to hold things in place long enough for a more robust and permanent solution.
 
 ```yaml
 instance_groups:
 - release: sysctl
   properties:
-    bash_start_snippet: |
+    bash_pre_start_snippet: |
       echo 'Authorized Users Only' > /etc/issue
-    bash_stop_snippet: |
+    bash_drain_snippet: |
       > /etc/issue
 ```
 
-
 ## Examples
 
-Here is a [production BOSH manifest](https://github.com/cunnie/deployments/blob/f6a9fdc6ac3f7bfd514e8ea42175514d4491c3cb/concourse-ntp-pdns-gce.yml) which uses the sysctl BOSH release.
+- a [production BOSH manifest](https://github.com/cunnie/deployments/blob/f6a9fdc6ac3f7bfd514e8ea42175514d4491c3cb/concourse-ntp-pdns-gce.yml) which uses the sysctl BOSH release
 
 ## Developer Notes
 
-Restraint and caution should be exercised when using `bash_start_snippet`
-and `bash_stop_snippet`: consider using custom BOSH releases instead.
+Restraint and caution should be exercised when using the `bash_*_snippet` properties: consider using custom BOSH releases instead.
 
-This release creates a `sysctl` configuration in
-`/etc/sysctl.d/61-bosh-sysctl-release.conf`;  this _should_ override any
-settings in the stemcell (typically `/etc/sysctl.d/60-*`), but this is a
-non-contractual dependency (A stemcell may have, for example, a
-`/etc/sysctl.d/62-*` file which would override any settings in the file created
-by this release).
+By default this release creates a `sysctl` configuration in `/etc/sysctl.d/61-bosh-sysctl-release.conf`; this _should_ override any settings in the stemcell (typically `/etc/sysctl.d/60-*`), but this is a non-contractual dependency (A stemcell may have, for example, a `/etc/sysctl.d/62-*` file which would override any settings in the file created by this release). If required the default file prefix can be changed by specifying a different prefix in the `sysctl_conf_prefix` property.

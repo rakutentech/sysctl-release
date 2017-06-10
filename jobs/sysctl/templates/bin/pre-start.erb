@@ -1,0 +1,10 @@
+#!/bin/bash
+set -eux
+
+SUBJOB=pre_start
+source env.sh
+
+ln -sf /etc/sysctl.d/<%= p("sysctl_conf_prefix") %>.bosh-sysctl-release.conf $JOB_DIR/config/sysctl.conf
+sysctl --system
+
+<%= p("bash_pre_start_snippet", "") %>

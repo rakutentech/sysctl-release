@@ -1,0 +1,9 @@
+#!/bin/bash
+<%= if_p("bash_drain_snippet") do |snippet| %>
+set -eux
+
+SUBJOB=drain
+source env.sh
+
+<%= snippet %>
+<% end %>

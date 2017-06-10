@@ -1,0 +1,9 @@
+#!/bin/bash
+<%= if_p("bash_post_deploy_snippet") do |snippet| %>
+set -eux
+
+SUBJOB=post_deploy
+source env.sh
+
+<%= snippet %>
+<% end %>

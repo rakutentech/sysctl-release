@@ -2,25 +2,47 @@
 name: sysctl
 
 templates:
-  ctl.erb: bin/ctl
-  sysctl.conf.erb: etc/sysctl.d/61-bosh-sysctl-release.conf
+  bin/ctl.erb: bin/ctl
+  bin/drain.erb: bin/drain
+  bin/env.sh: bin/env.sh
+  bin/post-deploy.erb: bin/post-deploy
+  bin/post-start.erb: bin/post-start
+  bin/pre-start.erb: bin/pre-start
+  config/sysctl.conf.erb: config/sysctl.conf
 
 packages: []
 
 properties:
+
   sysctl_conf:
+    description: Array of sysctl/value objects
+    default: []
+    example:
+    - {name: net.nf_conntrack_max, value: 65536}
+    - {name: vm.swappiness, value: 1}
+
+  sysctl_conf_prefix:
     description: |
-      A file of sysctl settings, one per line, no spaces, e.g. `net.nf_conntrack_max=65536`
-    default: ""
-  bash_start_snippet:
+      Prefix of the file injected in /etc/sysctl.d. Can be used to change the
+      relative priority of the sysctl properties injected by this job.
+    default: "61"
+
+  bash_pre_start_snippet:
     description: |
       A series of bash commands that are injected into the sysctl job's
-      startup script. Useful for post start-up customization, e.g.
-      "/var/vcap/bosh/bin/monit restart postgres"
-    default: ""
-  bash_stop_snippet:
+      pre-start script. Useful for pre start-up customization.
+
+  bash_post_start_snippet:
     description: |
       A series of bash commands that are injected into the sysctl job's
-      stop script. Useful for customization, e.g.
-      "ifdown eth0; ifup eth0"
-    default: ""
+      post-start script. Useful for post start-up customization.
+
+  bash_post_deploy_snippet:
+    description: |
+      A series of bash commands that are injected into the sysctl job's
+      post-deploy script.
+
+  bash_drain_snippet:
+    description: |
+      A series of bash commands that are injected into the sysctl job's
+      drain script.

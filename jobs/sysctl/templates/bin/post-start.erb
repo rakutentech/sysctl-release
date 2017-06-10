@@ -1,9 +1,9 @@
 #!/bin/bash
-<%= if_p("bash_post_start_snippet") do |snippet| %>
+<% if_p("bash_post_start_snippet") do |snippet| %>
 set -eux
 
-SUBJOB=post_start
-source env.sh
+SUBJOB=post-start
+source /var/vcap/jobs/sysctl/bin/env.sh
 
 <%= snippet %>
 <% end %>

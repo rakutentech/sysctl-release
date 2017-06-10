@@ -5,7 +5,6 @@ LOG_DIR="/var/vcap/sys/log/$JOB"
 PIDFILE="$RUN_DIR/pid"
 
 mkdir -p "$JOB_DIR" "$LOG_DIR" "$RUN_DIR"
-chown -R vcap:vcap "$JOB_DIR" "$LOG_DIR" "$RUN_DIR"
 
 # send the logs 1) to log file (with timestamp), 2) to syslog and 3) to stdout/stderr
 if [ -z "$SUBJOB" ]; then
@@ -14,17 +13,18 @@ if [ -z "$SUBJOB" ]; then
 else
   SUB=".$SUBJOB"
 fi
-_PID=$PID
 
+# TODO: replace awk with ts when ts becomes available in the stemcell
+# TODO: add --id=$$ to logger, when logger gains support for --id=<PID>
 exec -- \
   1> >(
     exec -a "$JOB$SUB stdout forwarder" tee \
-      >(ts "%Y-%m-%dT%T%z $_PID OUT " >>"$LOG_DIR/$SUBJOB.log") \
-      >(logger -p user.info  --id="$_PID" -t "vcap.$JOB$SUB")
+      >(awk -W interactive "{ \"date -Ins\" | getline TS; close(\"date -Ins\"); print TS, \"$$ OUT\", \$0 }" >>"$LOG_DIR/$SUBJOB.log") \
+      >(logger -p user.info  -t "vcap.$JOB$SUB")
   ) \
   2> >(
     exec -a "$JOB$SUB stderr forwarder" tee \
-      >(ts "%Y-%m-%dT%T%z $_PID ERR " >>"$LOG_DIR/$SUBJOB.log") \
-      >(logger -p user.error --id="$_PID" -t "vcap.$JOB$SUB") \
+      >(awk -W interactive "{ \"date -Ins\" | getline TS; close(\"date -Ins\"); print TS, \"$$ ERR\", \$0 }" >>"$LOG_DIR/$SUBJOB.log") \
+      >(logger -p user.error -t "vcap.$JOB$SUB") \
       1>&2
   )

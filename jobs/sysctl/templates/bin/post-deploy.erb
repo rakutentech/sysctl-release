@@ -1,9 +1,0 @@
-#!/bin/bash
-<% if_p("bash_post_deploy_snippet") do |snippet| %>
-set -eux
-
-SUBJOB=post-deploy
-source /var/vcap/jobs/sysctl/bin/env.sh
-
-<%= snippet %>
-<% end %>

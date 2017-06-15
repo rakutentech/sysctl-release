@@ -7,5 +7,3 @@ source /var/vcap/jobs/sysctl/bin/env.sh
 rm -f /etc/sysctl.d/*-bosh-sysctl-release.conf
 ln -s $JOB_DIR/config/sysctl.conf /etc/sysctl.d/<%= p("sysctl_conf_prefix") %>-bosh-sysctl-release.conf
 sysctl --system
-
-<%= p("bash_pre_start_snippet", "") %>

@@ -2,11 +2,7 @@
 name: sysctl
 
 templates:
-  bin/ctl.erb: bin/ctl
-  bin/drain.erb: bin/drain
   bin/env.sh: bin/env.sh
-  bin/post-deploy.erb: bin/post-deploy
-  bin/post-start.erb: bin/post-start
   bin/pre-start.erb: bin/pre-start
   config/sysctl.conf.erb: config/sysctl.conf
 
@@ -26,23 +22,3 @@ properties:
       Prefix of the file injected in /etc/sysctl.d. Can be used to change the
       relative priority of the sysctl properties injected by this job.
     default: "61"
-
-  bash_pre_start_snippet:
-    description: |
-      A series of bash commands that are injected into the sysctl job's
-      pre-start script. Useful for pre start-up customization.
-
-  bash_post_start_snippet:
-    description: |
-      A series of bash commands that are injected into the sysctl job's
-      post-start script. Useful for post start-up customization.
-
-  bash_post_deploy_snippet:
-    description: |
-      A series of bash commands that are injected into the sysctl job's
-      post-deploy script.
-
-  bash_drain_snippet:
-    description: |
-      A series of bash commands that are injected into the sysctl job's
-      drain script.

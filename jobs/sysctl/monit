@@ -1,5 +1,1 @@
-check process sysctl
-  with pidfile /var/vcap/sys/run/sysctl/pid
-  start program "/var/vcap/jobs/sysctl/bin/ctl start"
-  stop program "/var/vcap/jobs/sysctl/bin/ctl stop"
-  group vcap
+CHECK FILE sysctl_conf PATH /etc/sysctl.d/<%= p("sysctl_conf_prefix") %>-bosh-sysctl-release.conf
